@@ -4,6 +4,8 @@ A Claude Code / Agent Skills skill that audits a local React/Tailwind component 
 
 It connects to the [Figma MCP server](https://developers.figma.com/docs/figma-mcp-server/), fetches the design token variables for a given node, and compares them against the named design-token classes used in the component file. Arbitrary values (`h-[48px]`, raw utilities like `flex` or `w-full`, and inline literals) are intentionally ignored — the skill focuses on whether the component is using the **right tokens with the right names and values**.
 
+> **Read-only by design.** This skill must never modify your Figma files. It only calls read-only MCP tools (`get_variable_defs`, `get_design_context`, etc.). The `SKILL.md` documents the full contract and includes a `settings.json` snippet that denies write-capable Figma tools at the harness level — applying it is strongly recommended, since skill text alone cannot enforce tool access.
+
 ## Install
 
 ```bash
