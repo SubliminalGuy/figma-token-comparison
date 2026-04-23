@@ -7,10 +7,8 @@ It connects to the [Figma MCP server](https://developers.figma.com/docs/figma-mc
 ## Install
 
 ```bash
-npx skills add subliminal-kid/figma-token-comparison
+npx skills add SubliminalGuy/figma-token-comparison
 ```
-
-(Replace `subliminal-kid` with the owner of the published repo.)
 
 ## Usage
 
