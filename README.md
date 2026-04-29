@@ -2,9 +2,9 @@
 
 A Claude Code / Agent Skills skill that audits a local React/Tailwind component against its Figma source of truth.
 
-It connects to the [Figma MCP server](https://developers.figma.com/docs/figma-mcp-server/), fetches the design token variables for a given node, and compares them against the named design-token classes used in the component file. Arbitrary values (`h-[48px]`, raw utilities like `flex` or `w-full`, and inline literals) are intentionally ignored — the skill focuses on whether the component is using the **right tokens with the right names and values**.
+It connects to the [Figma MCP server](https://developers.figma.com/docs/figma-mcp-server/), fetches **Code Syntax class names** (preferred) and/or **design token variables** for a given node, and compares them against the named design-token classes used in the component file. When Code Syntax is configured in the Figma file, the comparison uses exact string matching for maximum accuracy. When only variable definitions are available, it falls back to heuristic token-name reconciliation. Arbitrary values (`h-[48px]`, raw utilities like `flex` or `w-full`, and inline literals) are intentionally ignored — the skill focuses on whether the component is using the **right tokens with the right names and values**.
 
-> **Read-only by design.** This skill must never modify your Figma files. It only calls read-only MCP tools (`get_variable_defs`, `get_design_context`, etc.). The `SKILL.md` documents the full contract and includes a `settings.json` snippet that denies write-capable Figma tools at the harness level — applying it is strongly recommended, since skill text alone cannot enforce tool access.
+> **Read-only by design.** This skill must never modify your Figma files. It only calls read-only MCP tools (`get_code_connect_suggestions`, `get_code_connect_map`, `get_variable_defs`, `get_design_context`, etc.). The `SKILL.md` documents the full contract and includes a `settings.json` snippet that denies write-capable Figma tools at the harness level — applying it is strongly recommended, since skill text alone cannot enforce tool access.
 
 ## Install
 
@@ -30,10 +30,12 @@ Example:
 For the given Figma node, the skill:
 
 1. Extracts `fileKey` and `nodeId` from the URL.
-2. Calls the Figma MCP server to fetch variable definitions and design context (screenshot, Code Connect hints, designer annotations).
-3. Reads the component file and collects **named design-token classes only** (e.g. `bg-comment-field-background`, `rounded-base-fixed-s`, `p-base-fixed-400`, `font-preset-base-body-03`).
-4. Compares them token-by-token against the Figma variables.
-5. Produces a compact report grouped into **Matches**, **Discrepancies**, and **Unverified**, with `file.tsx:L123` references.
+2. Fetches **Code Syntax class names** via `get_code_connect_suggestions` / `get_code_connect_map` (preferred source — enables exact string matching).
+3. Fetches **variable definitions** via `get_variable_defs` (fallback when Code Syntax is unavailable, or supplementary cross-check when both are present).
+4. Fetches **design context** — screenshot, Code Connect hints, designer annotations.
+5. Reads the component file and collects **named design-token classes only** (e.g. `bg-comment-field-background`, `rounded-base-fixed-s`, `p-base-fixed-400`, `font-preset-base-body-03`).
+6. Compares them against the Figma data — exact string matching when Code Syntax is available, heuristic token-name reconciliation otherwise.
+7. Produces a compact report grouped into **Matches**, **Discrepancies**, and **Unverified**, with `file.tsx:L123` references and a note on which comparison method was used.
 
 ## Prerequisites
 
