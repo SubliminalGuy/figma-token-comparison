@@ -1,7 +1,7 @@
 ---
 name: figma-token-comparison
 description: Connect to a Figma design via the Figma MCP server and compare its design tokens (colors, spacing, typography, radii, borders) against the tokens used in a local component implementation. Use when the user provides a Figma URL and asks to verify, audit, or reconcile tokens in a React/Tailwind component.
-argument-hint: "[figma_url] <component_path>"
+argument-hint: <figma_url> <component_path>
 ---
 
 # Figma Token Comparison
